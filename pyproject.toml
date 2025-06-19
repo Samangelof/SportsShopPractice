@@ -11,6 +11,7 @@ version = "0.1.0"
 description = ""
 authors = ["Mark Safin <samangelofw@gmail.com>"]
 readme = "README.md"
+packages = [{ include = "sports_shop" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
