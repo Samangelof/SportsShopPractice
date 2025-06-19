@@ -42,11 +42,11 @@ jobs:
         username: ${{ secrets.DEPLOY_USER }}
         password: ${{ secrets.DEPLOY_PASS }}
         source: |
-          .github/
-          sports_shop/
-          pyproject.toml
-          poetry.lock
-          README.md
+          SportsShopPractice/.github/
+          SportsShopPractice/sports_shop/
+          SportsShopPractice/pyproject.toml
+          SportsShopPractice/poetry.lock
+          SportsShopPractice/README.md
         target: "/opt/sports_shop"
         strip_components: 0
 
