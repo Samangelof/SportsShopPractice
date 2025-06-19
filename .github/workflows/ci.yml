@@ -41,12 +41,7 @@ jobs:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         password: ${{ secrets.DEPLOY_PASS }}
-        source: |
-          pyproject.toml
-          poetry.lock
-          main.py
-          .github
-          README.md
+        source: "./"
         target: "/opt/sports_shop"
         strip_components: 0
 
