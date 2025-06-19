@@ -37,6 +37,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Debug - List files
+      run: |
+        echo "=== Current directory ==="
+        pwd
+        echo "=== Files in workspace ==="
+        ls -la
+        echo "=== sports_shop directory ==="
+        ls -la sports_shop/ || echo "sports_shop directory not found"
+        echo "=== Checking specific files ==="
+        test -f pyproject.toml && echo "pyproject.toml exists" || echo "pyproject.toml missing"
+        test -f poetry.lock && echo "poetry.lock exists" || echo "poetry.lock missing"
+        test -f README.md && echo "README.md exists" || echo "README.md missing"
+
     - name: Copy project to server
       uses: appleboy/scp-action@v0.1.4
       with:
@@ -66,11 +79,14 @@ jobs:
           echo "=== PYPROJECT CONTENT ==="
           cat pyproject.toml || echo "NO pyproject.toml FOUND"
           
+          # Устанавливаем Poetry если его нет
           if ! command -v poetry &> /dev/null; then
             curl -sSL https://install.python-poetry.org | python3 -
             export PATH="$HOME/.local/bin:$PATH"
           fi
           
+          # Устанавливаем зависимости
           poetry install
           
+          # Запускаем приложение
           poetry run python sports_shop/main.py
