@@ -1,9 +1,7 @@
-name: CI
+name: CI + Deploy
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 jobs:
@@ -26,5 +24,35 @@ jobs:
     - name: Install dependencies
       run: poetry install
 
+    - name: Run ruff linter
+      run: poetry run ruff .
+
     - name: Run main.py
       run: poetry run python sports_shop/main.py
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Copy project to server
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        password: ${{ secrets.DEPLOY_PASS }}
+        source: "."
+        target: "/opt/sports_shop"
+
+    - name: Run app remotely
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DEPLOY_HOST }}
+        username: ${{ secrets.DEPLOY_USER }}
+        password: ${{ secrets.DEPLOY_PASS }}
+        script: |
+          cd /opt/sports_shop
+          curl -sSL https://install.python-poetry.org | python3 -
+          export PATH="$HOME/.local/bin:$PATH"
+          poetry install
+          poetry run python main.py
