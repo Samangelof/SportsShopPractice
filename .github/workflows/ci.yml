@@ -20,12 +20,7 @@ jobs:
 
     - name: Install Poetry
       run: |
-        POETRY_VERSION=1.7.1
-        POETRY_URL="https://github.com/python-poetry/poetry/releases/download/${POETRY_VERSION}/poetry-${POETRY_VERSION}-linux.tar.gz"
-        POETRY_SHA256="e0b7e6d8e6e2e5e7b1b2e5e6e7e8e9e0e1e2e3e4e5e6e7e8e9e0e1e2e3e4e5"
-        curl -sSL "$POETRY_URL" -o poetry.tar.gz
-        echo "${POETRY_SHA256}  poetry.tar.gz" | sha256sum -c -
-        tar -xzf poetry.tar.gz -C $HOME/.local
+        curl -sSL https://install.python-poetry.org | python3 -
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
     - name: Install dependencies
