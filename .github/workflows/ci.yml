@@ -41,8 +41,14 @@ jobs:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         password: ${{ secrets.DEPLOY_PASS }}
-        source: "."
+        source: |
+          pyproject.toml
+          poetry.lock
+          main.py
+          .github
+          README.md
         target: "/opt/sports_shop"
+        strip_components: 0
 
     - name: Run app remotely
       uses: appleboy/ssh-action@master
