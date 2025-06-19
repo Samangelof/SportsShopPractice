@@ -53,6 +53,10 @@ jobs:
         password: ${{ secrets.DEPLOY_PASS }}
         script: |
           cd /opt/sports_shop
+          echo "=== REMOTE DIR LISTING ==="
+          ls -la
+          echo "=== PYPROJECT CONTENT ==="
+          cat pyproject.toml || echo "NO pyproject.toml FOUND"
           curl -sSL https://install.python-poetry.org | python3 -
           export PATH="$HOME/.local/bin:$PATH"
           poetry install
