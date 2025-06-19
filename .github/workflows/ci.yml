@@ -25,7 +25,7 @@ jobs:
       run: poetry install
 
     - name: Run ruff linter
-      run: poetry run ruff .
+      run: poetry run ruff check .
 
     - name: Run main.py
       run: poetry run python sports_shop/main.py
