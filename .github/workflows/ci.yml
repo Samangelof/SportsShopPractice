@@ -56,11 +56,7 @@ jobs:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         password: ${{ secrets.DEPLOY_PASS }}
-        source: |
-          sports_shop/
-          pyproject.toml
-          poetry.lock
-          README.md
+        source: "sports_shop/,pyproject.toml,poetry.lock,README.md"
         target: "/opt/sports_shop"
         strip_components: 0
 
@@ -79,14 +75,11 @@ jobs:
           echo "=== PYPROJECT CONTENT ==="
           cat pyproject.toml || echo "NO pyproject.toml FOUND"
           
-          # Устанавливаем Poetry если его нет
           if ! command -v poetry &> /dev/null; then
             curl -sSL https://install.python-poetry.org | python3 -
             export PATH="$HOME/.local/bin:$PATH"
           fi
           
-          # Устанавливаем зависимости
           poetry install
           
-          # Запускаем приложение
           poetry run python sports_shop/main.py
