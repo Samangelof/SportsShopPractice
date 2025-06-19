@@ -41,9 +41,9 @@ jobs:
         host: ${{ secrets.DEPLOY_HOST }}
         username: ${{ secrets.DEPLOY_USER }}
         password: ${{ secrets.DEPLOY_PASS }}
-        source: "./"
+        source: "sports_shop/*"
         target: "/opt/sports_shop"
-        strip_components: 0
+        strip_components: 1
 
     - name: Run app remotely
       uses: appleboy/ssh-action@master
