@@ -1,6 +1,14 @@
+from fastapi import FastAPI
+
+
+app = FastAPI()
+
+
+@app.get("/")
 def main():
-    print("Welcome to the sports shop!")
+    return {"status": "ok", "message": "U Home"}
 
 
-if __name__ == "__main__":
-    main()
+@app.get("/health")
+def health():
+    return {"status": "ok"}
