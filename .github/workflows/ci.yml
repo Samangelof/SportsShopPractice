@@ -1,85 +1,86 @@
-name: CI + Deploy
+name: CI
 
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-    - name: Install dependencies
-      run: poetry install
+      - name: Install dependencies
+        run: poetry install
+        
+      - name: Run ruff linter
+        run: poetry run ruff check .
 
-    - name: Run ruff linter
-      run: poetry run ruff check .
+      - name: Run tests
+        run: poetry run pytest -v
 
-    - name: Run main.py
-      run: poetry run python sports_shop/main.py
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v4
 
-    steps:
-    - uses: actions/checkout@v4
+  #   - name: Debug - List files
+  #     run: |
+  #       echo "=== Current directory ==="
+  #       pwd
+  #       echo "=== Files in workspace ==="
+  #       ls -la
+  #       echo "=== sports_shop directory ==="
+  #       ls -la sports_shop/ || echo "sports_shop directory not found"
+  #       echo "=== Checking specific files ==="
+  #       test -f pyproject.toml && echo "pyproject.toml exists" || echo "pyproject.toml missing"
+  #       test -f poetry.lock && echo "poetry.lock exists" || echo "poetry.lock missing"
+  #       test -f README.md && echo "README.md exists" || echo "README.md missing"
 
-    - name: Debug - List files
-      run: |
-        echo "=== Current directory ==="
-        pwd
-        echo "=== Files in workspace ==="
-        ls -la
-        echo "=== sports_shop directory ==="
-        ls -la sports_shop/ || echo "sports_shop directory not found"
-        echo "=== Checking specific files ==="
-        test -f pyproject.toml && echo "pyproject.toml exists" || echo "pyproject.toml missing"
-        test -f poetry.lock && echo "poetry.lock exists" || echo "poetry.lock missing"
-        test -f README.md && echo "README.md exists" || echo "README.md missing"
+  #   - name: Copy project to server
+  #     uses: appleboy/scp-action@v0.1.4
+  #     with:
+  #       host: ${{ secrets.DEPLOY_HOST }}
+  #       username: ${{ secrets.DEPLOY_USER }}
+  #       password: ${{ secrets.DEPLOY_PASS }}
+  #       source: "sports_shop/,pyproject.toml,poetry.lock,README.md"
+  #       target: "/opt/sports_shop"
+  #       strip_components: 0
 
-    - name: Copy project to server
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USER }}
-        password: ${{ secrets.DEPLOY_PASS }}
-        source: "sports_shop/,pyproject.toml,poetry.lock,README.md"
-        target: "/opt/sports_shop"
-        strip_components: 0
-
-    - name: Run app remotely
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.DEPLOY_HOST }}
-        username: ${{ secrets.DEPLOY_USER }}
-        password: ${{ secrets.DEPLOY_PASS }}
-        script: |
-          cd /opt/sports_shop
-          echo "=== REMOTE DIR LISTING ==="
-          ls -la
-          echo "=== CHECKING SPORTS_SHOP DIR ==="
-          ls -la sports_shop/ || echo "NO sports_shop DIR"
-          echo "=== PYPROJECT CONTENT ==="
-          cat pyproject.toml || echo "NO pyproject.toml FOUND"
+  #   - name: Run app remotely
+  #     uses: appleboy/ssh-action@master
+  #     with:
+  #       host: ${{ secrets.DEPLOY_HOST }}
+  #       username: ${{ secrets.DEPLOY_USER }}
+  #       password: ${{ secrets.DEPLOY_PASS }}
+  #       script: |
+  #         cd /opt/sports_shop
+  #         echo "=== REMOTE DIR LISTING ==="
+  #         ls -la
+  #         echo "=== CHECKING SPORTS_SHOP DIR ==="
+  #         ls -la sports_shop/ || echo "NO sports_shop DIR"
+  #         echo "=== PYPROJECT CONTENT ==="
+  #         cat pyproject.toml || echo "NO pyproject.toml FOUND"
           
-          if ! command -v poetry &> /dev/null; then
-            curl -sSL https://install.python-poetry.org | python3 -
-            export PATH="$HOME/.local/bin:$PATH"
-          fi
+  #         if ! command -v poetry &> /dev/null; then
+  #           curl -sSL https://install.python-poetry.org | python3 -
+  #           export PATH="$HOME/.local/bin:$PATH"
+  #         fi
           
-          poetry install
+  #         poetry install
           
-          poetry run python sports_shop/main.py
+  #         poetry run python sports_shop/main.py
