@@ -37,8 +37,8 @@ jobs:
         run: poetry run ruff check .
 
       - name: Run tests
-        run: poetry run pytest -v --cov=app --cov-report=term-missing
-        
+        run: poetry run pytest -v --cov=sports_shop --cov-report=term-missing
+
   # deploy:
   #   needs: build
   #   runs-on: ubuntu-latest
